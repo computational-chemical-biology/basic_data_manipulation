@@ -1,0 +1,2 @@
+sudo mount -t ntfs-3g -o uid=$(id -u) /dev/sdb1 /mnt/
+ln -s /mnt/ /home/rsilva/Flask/carcara/static/ftp/Dados_Camila

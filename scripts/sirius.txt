@@ -1,0 +1,3 @@
+./sirius-gui/bin/sirius -i demo-data/ms/Bicuculline.ms -o formulas_bicuculline formula -c 10 structure --database pubchem
+./sirius-gui/bin/sirius -i local_db.txt custom-db --name local_test
+./sirius/bin/sirius -i structures_sirius.tsv custom-db --name myDB --output /home/rsilva/tools/sirius-4.9.3-linux64
