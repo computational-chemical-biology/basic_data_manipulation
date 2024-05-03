@@ -13,6 +13,8 @@ import argparse
 import json
 import imutils
 import cv2
+from pdf2image import convert_from_path
+import os
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -55,9 +57,19 @@ correct_ans = list(ANSWER_KEY.values())
 questions = int(args["questions"])
 answers = int(args["responses"])
 
+fn = args["image"]
+
+if '.pdf' in fn:
+    page = convert_from_path(fn)
+    page[0].save(fn.replace('pdf', 'png'), "png")
+    fn = fn.replace('pdf', 'png')
+    image = cv2.imread(fn)
+    os.remove(fn)
+else:
+    image = cv2.imread(fn)
+
 # load the image, convert it to grayscale, blur it
 # slightly, then find edges
-image = cv2.imread(args["image"])
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 edged = cv2.Canny(blurred, 75, 200)
