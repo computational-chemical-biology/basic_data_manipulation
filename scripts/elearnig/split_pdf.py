@@ -5,7 +5,7 @@ def pdf_split(filename, numpages, out):
     totpg = os.popen(f"pdftk {filename} dump_data | grep NumberOfPages | cut -d ' ' -f 2").read().strip()
     pglist = list(range(1, int(totpg), int(numpages)))
     pglist.append(int(totpg)+1)
-    l = len(pglist)-1
+    l = len(pglist)
     k = 1
     out = os.path.join(out, filename.split('/')[-1])
     for i in range(0, l):
