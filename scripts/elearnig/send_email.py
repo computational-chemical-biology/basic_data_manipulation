@@ -76,22 +76,26 @@ if __name__=='__main__':
         else:
             message = f'''Cara(o) {first_name},
 
-            blablabla.
+            veja a sua prova e seu respectivo gabarito. Em caso de dúvida ou
+pedidos de revisão, responda este email.
             att,
             '''
         if len(sys.argv) > 7:
             subject = sys.argv[7]
         else:
-            subject = 'Correção da Prova I - Bioestatística II - 25/06/2024'
+            subject = 'Correção da Prova II - Bioestatística II - 04/07/2024'
 
         # hardcoded
         #fl = '%s_corrigida.pdf' % df.loc[i, 'Código']
         fl = [x for x in fls if df.loc[i, 'Código'] in x][0]
-        template = sys.argv[5]
-
-        if fl in fls:
+        if len(sys.argv) > 5:
+            template = sys.argv[5]
             gfl = 'final-%s_gabarito.pdf' % fl.split('_')[-1].replace('.pdf', '')
             temp = os.path.join(template, gfl)
+        else:
+            temp = None
+
+        if fl in fls:
             sendEmail(email, password, message, recipient,
                       subject, os.path.join(path, fl), template=temp)
         else:
