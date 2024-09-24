@@ -114,3 +114,29 @@ for el in txt_els:
 dts_els = driver.find_elements(By.CLASS_NAME, "datas") 
 for el in dts_els:
     dts.append(el.text)
+
+from selenium import webdriver
+import chromedriver_binary
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+import time
+chrome_options = Options()
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+
+driver = webdriver.Chrome(options=chrome_options)
+driver.get("http://memoria2.cnpq.br/web/guest/chamadas-publicas?p_p_id=resultadosportlet_WAR_resultadoscnpqportlet_INSTANCE_0ZaM&filtro=abertas/")
+WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "h4")))
+time.sleep(1)
+titles = []
+txt = []
+dts = []
+#followers_els = driver.find_elements_by_css_selector(".item-value-data")
+title_els = driver.find_elements(By.TAG_NAME, "h4")
+for el in title_els:
+    titles.append(el.text)
+
