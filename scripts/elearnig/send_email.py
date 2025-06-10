@@ -76,14 +76,24 @@ if __name__=='__main__':
         else:
             message = f'''Cara(o) {first_name},
 
-            veja a sua prova e seu respectivo gabarito. Em caso de dúvida ou
+            veja a sua prova e seu respectivo gabarito, presente no classroom. Em caso de dúvida ou
 pedidos de revisão, responda este email.
+
+            O registro das listas de exercícios e notas podem ser encontradas
+no link abaixo. Verifiquem se a nota foi atribuída corretamente, por favor.
+            https://docs.google.com/spreadsheets/d/1lVUuQ4lS1Msvmk7dhtuVKOinMCjH7VulZkyg0s6rKjA/edit?usp=sharing
+
+            Estudantes com 3 <= nota < 5 se qualificam para a prova de
+recuperação, que será realizada entre 27 de Janeiro e 6 de Fevereiro de 2025,
+em data a ser acordada com os estudantes.
+
             att,
+            Ricardo
             '''
         if len(sys.argv) > 7:
             subject = sys.argv[7]
         else:
-            subject = 'Correção da Prova II - Bioestatística II - 04/07/2024'
+            subject = 'Correção da Prova II - Bioestatística I - 13/12/2024'
 
         # hardcoded
         #fl = '%s_corrigida.pdf' % df.loc[i, 'Código']
