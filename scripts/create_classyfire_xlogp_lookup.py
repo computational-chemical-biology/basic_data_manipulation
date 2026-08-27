@@ -10,10 +10,6 @@ OUTPUT_FILE = "classyfire_xlogp_lookup.py"
 
 def main():
 
-    # --------------------------------------------------------
-    # Nested lookup dictionary
-    # --------------------------------------------------------
-
     lookup = {}
 
     print(f"Reading: {INPUT_FILE}")
@@ -37,15 +33,11 @@ def main():
             "n_compounds",
         }
 
-        if not required_columns.issubset(
-            reader.fieldnames
-        ):
+        if not required_columns.issubset(reader.fieldnames):
 
             raise ValueError(
-                "Input file must contain columns:\n"
-                + "\n".join(
-                    sorted(required_columns)
-                )
+                "Input file must contain columns: "
+                "level, node_name, median_xlogp, n_compounds"
             )
 
         n_rows = 0
@@ -59,28 +51,15 @@ def main():
                 continue
 
             try:
-                median_xlogp = float(
-                    row["median_xlogp"]
-                )
+                median_xlogp = float(row["median_xlogp"])
+                n_compounds = int(row["n_compounds"])
 
-                n_compounds = int(
-                    row["n_compounds"]
-                )
+            except (ValueError, TypeError):
 
-            except (
-                ValueError,
-                TypeError,
-            ):
-
-                print(
-                    f"Skipping invalid row: "
-                    f"{row}"
-                )
-
+                print(f"Skipping invalid row: {row}")
                 continue
 
             if level not in lookup:
-
                 lookup[level] = {}
 
             lookup[level][node_name] = {
@@ -90,40 +69,36 @@ def main():
 
             n_rows += 1
 
-    print(
-        f"Loaded {n_rows:,} hierarchy nodes"
-    )
+    print(f"Loaded {n_rows:,} hierarchy nodes")
 
     # --------------------------------------------------------
-    # Generate Python module
+    # Generate valid Python module
     # --------------------------------------------------------
 
     with open(
         OUTPUT_FILE,
         "w",
-        encoding="utf-8"
+        encoding="utf-8",
+        newline="\n"
     ) as f:
 
-        f.write(
-            '"""\\n'
-            'Precomputed ClassyFire/ChemOnt '
-            'median XLogP lookup.\\n'
-            '\\n'
-            f'Generated from: {INPUT_FILE}\\n'
-            '"""\\n\\n'
-        )
+        # IMPORTANT:
+        # Use actual newline characters here.
+        f.write('''"""
+Precomputed ClassyFire/ChemOnt median XLogP lookup.
 
-        f.write(
-            "# Structure:\\n"
-            "# XLOGP[level][node_name] = {\\n"
-            "#     'median_xlogp': float,\\n"
-            "#     'n_compounds': int\\n"
-            "# }\\n\\n"
-        )
+Generated from: classyfire_xlogp_medians.tsv
+"""
 
-        f.write(
-            "XLOGP = "
-        )
+# Structure:
+# XLOGP[level][node_name] = {
+#     "median_xlogp": float,
+#     "n_compounds": int
+# }
+
+''')
+
+        f.write("XLOGP = ")
 
         f.write(
             pformat(
@@ -135,12 +110,7 @@ def main():
 
         f.write("\n\n")
 
-        # ----------------------------------------------------
-        # Add a convenient lookup function
-        # ----------------------------------------------------
-
-        f.write(
-            '''
+        f.write('''
 def get_xlogp(
     kingdom=None,
     superclass=None,
@@ -149,8 +119,8 @@ def get_xlogp(
     direct_parent=None,
 ):
     """
-    Return the median XLogP for the most specific
-    supplied ClassyFire/ChemOnt node.
+    Return information for the most specific supplied
+    ClassyFire/ChemOnt node.
 
     Priority:
         direct_parent
@@ -158,13 +128,6 @@ def get_xlogp(
         class
         superclass
         kingdom
-
-    Returns:
-        dict with:
-            median_xlogp
-            n_compounds
-
-        or None if no match is found.
     """
 
     candidates = [
@@ -185,7 +148,6 @@ def get_xlogp(
             ).get(node_name)
 
             if result is not None:
-
                 return result
 
     return None
@@ -193,9 +155,9 @@ def get_xlogp(
 
 def get_median_xlogp(**kwargs):
     """
-    Return only the median XLogP value.
+    Return only the median XLogP.
 
-    Returns None if no node is found.
+    Returns None if no matching ClassyFire node is found.
     """
 
     result = get_xlogp(**kwargs)
@@ -204,25 +166,14 @@ def get_median_xlogp(**kwargs):
         return None
 
     return result["median_xlogp"]
-'''
-        )
+''')
 
-    print(
-        f"Created: {OUTPUT_FILE}"
-    )
+    print(f"Created valid Python module: {OUTPUT_FILE}")
 
-    # --------------------------------------------------------
-    # Summary
-    # --------------------------------------------------------
-
-    print()
+    print("\nNodes by level:")
 
     for level, nodes in lookup.items():
-
-        print(
-            f"{level:15s}: "
-            f"{len(nodes):,} nodes"
-        )
+        print(f"  {level}: {len(nodes):,}")
 
 
 if __name__ == "__main__":

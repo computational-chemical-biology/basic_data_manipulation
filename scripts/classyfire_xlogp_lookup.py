@@ -1,4 +1,16 @@
-"""\nPrecomputed ClassyFire/ChemOnt median XLogP lookup.\n\nGenerated from: classyfire_xlogp_medians.tsv\n"""\n\n# Structure:\n# XLOGP[level][node_name] = {\n#     'median_xlogp': float,\n#     'n_compounds': int\n# }\n\nXLOGP = {'kingdom': {'Inorganic compounds': {'median_xlogp': 3.5, 'n_compounds': 28746},
+"""
+Precomputed ClassyFire/ChemOnt median XLogP lookup.
+
+Generated from: classyfire_xlogp_medians.tsv
+"""
+
+# Structure:
+# XLOGP[level][node_name] = {
+#     "median_xlogp": float,
+#     "n_compounds": int
+# }
+
+XLOGP = {'kingdom': {'Inorganic compounds': {'median_xlogp': 3.5, 'n_compounds': 28746},
              'Organic compounds': {'median_xlogp': 3.7, 'n_compounds': 7326692}},
  'superclass': {'Acetylides': {'median_xlogp': 1.9, 'n_compounds': 203},
                 'Alkaloids and derivatives': {'median_xlogp': 3.1, 'n_compounds': 23118},
@@ -4553,8 +4565,8 @@ def get_xlogp(
     direct_parent=None,
 ):
     """
-    Return the median XLogP for the most specific
-    supplied ClassyFire/ChemOnt node.
+    Return information for the most specific supplied
+    ClassyFire/ChemOnt node.
 
     Priority:
         direct_parent
@@ -4562,13 +4574,6 @@ def get_xlogp(
         class
         superclass
         kingdom
-
-    Returns:
-        dict with:
-            median_xlogp
-            n_compounds
-
-        or None if no match is found.
     """
 
     candidates = [
@@ -4589,7 +4594,6 @@ def get_xlogp(
             ).get(node_name)
 
             if result is not None:
-
                 return result
 
     return None
@@ -4597,9 +4601,9 @@ def get_xlogp(
 
 def get_median_xlogp(**kwargs):
     """
-    Return only the median XLogP value.
+    Return only the median XLogP.
 
-    Returns None if no node is found.
+    Returns None if no matching ClassyFire node is found.
     """
 
     result = get_xlogp(**kwargs)
