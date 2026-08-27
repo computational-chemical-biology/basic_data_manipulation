@@ -4556,57 +4556,73 @@ XLOGP = {'kingdom': {'Inorganic compounds': {'median_xlogp': 3.5, 'n_compounds':
                    'p-Xylenes': {'median_xlogp': 3.5, 'n_compounds': 1573},
                    'p-Xylenols': {'median_xlogp': 2.5, 'n_compounds': 29}}}
 
-
-def get_xlogp(
-    kingdom=None,
-    superclass=None,
-    chem_class=None,
-    subclass=None,
-    direct_parent=None,
-):
+def get_xlogp(node_name):
     """
-    Return information for the most specific supplied
-    ClassyFire/ChemOnt node.
+    Search for a ClassyFire/ChemOnt node name across all
+    hierarchy levels.
 
-    Priority:
-        direct_parent
-        subclass
-        class
-        superclass
-        kingdom
+    Parameters
+    ----------
+    node_name : str
+        ClassyFire node name, for example:
+        "Fatty Acyls"
+        "Lipids and lipid-like molecules"
+
+    Returns
+    -------
+    dict or None
+        Dictionary containing:
+        - level
+        - median_xlogp
+        - n_compounds
+
+        Returns None if the node is not found.
     """
 
-    candidates = [
-        ("direct_parent", direct_parent),
-        ("subclass", subclass),
-        ("class", chem_class),
-        ("superclass", superclass),
-        ("kingdom", kingdom),
-    ]
+    if not node_name:
+        return None
 
-    for level, node_name in candidates:
+    node_name = node_name.strip()
 
-        if node_name:
+    for level, nodes in XLOGP.items():
 
-            result = XLOGP.get(
-                level,
-                {}
-            ).get(node_name)
+        result = nodes.get(node_name)
 
-            if result is not None:
-                return result
+        if result is not None:
+
+            # Include the hierarchy level in the result
+            return {
+                "level": level,
+                "median_xlogp": result["median_xlogp"],
+                "n_compounds": result["n_compounds"],
+            }
 
     return None
 
 
-def get_median_xlogp(**kwargs):
+def get_median_xlogp(node_name):
     """
-    Return only the median XLogP.
+    Return the median XLogP for a ClassyFire/ChemOnt node.
 
-    Returns None if no matching ClassyFire node is found.
+    Searches automatically across all hierarchy levels:
+        kingdom
+        superclass
+        class
+        subclass
+        direct_parent
+
+    Parameters
+    ----------
+    node_name : str
+        Any ClassyFire node name.
+
+    Returns
+    -------
+    float or None
+        Median XLogP, or None if the node is not found.
     """
 
-    result = get_xlogp(**kwargs)
+    result = get_xlogp(node_name)
 
     if result is None:
         return None
